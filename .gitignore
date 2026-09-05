@@ -1,0 +1,14 @@
+# 环境安装包等二进制资料（体积过大，不上传 GitHub）
+资料/前端环境安装包/
+资料/后端环境安装包/
+
+# 运行产物与运行数据
+ai-spingboot/uploads/
+ai-vue/dist/
+ai-vue/node_modules/
+
+# 日志与系统文件
+*.log
+.DS_Store
+Thumbs.db
+Desktop.ini
