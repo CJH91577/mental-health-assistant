@@ -1,95 +1,110 @@
-# 心理健康助手（Mental Health Assistant）
+# 💚 心理健康助手 —— 大学生心理健康 AI 陪伴平台
 
-![Vue 3](https://img.shields.io/badge/Vue-3.5-42b883) ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-6db33f) ![DeepSeek](https://img.shields.io/badge/AI-DeepSeek--V3-4d6bfe) ![MySQL](https://img.shields.io/badge/MySQL-8.0-00758f) ![Element Plus](https://img.shields.io/badge/Element%20Plus-2.13-409eff)
+> **Vue 3 + Spring Boot 3 全栈应用**：AI 心理咨询（DeepSeek 流式对话）·
+> 情绪日记与 AI 情绪分析 · 心理健康知识库 · 管理端数据看板。
 
-一个面向大学生群体的心理健康应用：**AI 心理咨询 + 情绪日记 + 心理健康知识库 + 数据看板**。
+面向大学生群体的心理健康应用，围绕「**温暖陪伴**」与「**专业支持**」两条主线设计：
 
-## ✨ 功能
+- 对话侧：AI 心理咨询基于 DeepSeek-V3 大模型**流式回复（SSE）**，带会话记忆（近 30 条上下文），
+  系统提示词内置共情与危机干预原则，全程中文温暖交流；
+- 记录侧：情绪日记记录每日情绪、睡眠与压力（1-10 评分 + 8 种情绪卡片），
+  提交后自动调用大模型生成**结构化 AI 情绪分析**（主要情绪/评分/风险等级/改善建议）；
+- 运营侧：心理健康知识库（富文本文章 + 分类 + 阅读量）+ 管理端数据看板
+  （情绪趋势 / 咨询活动 / 用户活跃度三类 ECharts 图表）。
 
-| 模块 | 说明 |
-|------|------|
-| AI 心理咨询 | 基于大模型（DeepSeek）的流式对话（SSE），支持多会话管理、情绪花园、对话记忆 |
-| 情绪日记 | 情绪评分（1-10）+ 8 种情绪卡片 + 睡眠/压力记录，提交后自动生成 AI 情绪分析 |
-| 知识科普 | 心理健康文章分类浏览、阅读量统计；后台支持发布/下线/富文本编辑/封面上传 |
-| 数据统计 | 管理端看板：情绪趋势、咨询活动、用户活跃度（ECharts） |
-| 用户体系 | JWT 登录注册，普通用户 / 管理员双角色双端界面 |
+```
+浏览器（Vue 3 + Element Plus + ECharts + wangEditor，打包进后端 static/）
+   │  /api/**（JWT 认证）   /files/**（上传文件静态服务）   SPA 深层路由回退
+   ▼
+Spring Boot 3.5 后端（端口 1235）
+   ├─ 用户模块      登录 / 注册 / 登出 / 当前用户（BCrypt + JWT）
+   ├─ 心理咨询      会话管理 + SSE 流式对话 + 会话情绪分析（ChatMemory 记忆）
+   ├─ 情绪日记      日记 CRUD（同日唯一）+ 大模型情绪分析
+   ├─ 知识库        分类 / 文章分页 / 详情阅读量 / 富文本 CRUD / 上下线
+   ├─ 文件管理      封面上传（扩展名白名单）→ /files 静态服务
+   └─ 数据统计      概览统计卡 + 近 7 天趋势（情绪 / 咨询 / 活跃度，缺失日期补 0）
+   ▼
+MySQL 8（mental_health_assistant，9 张表，含演示数据）
+   ▼
+DeepSeek-V3（硅基流动 / 任意 OpenAI 兼容端点，Spring AI 接入）
+```
 
-## 🛠 技术栈
+## ✨ 功能特性
 
-- **前端**：Vue 3 + Vite + Element Plus + Pinia + Vue Router + ECharts + wangEditor（`ai-vue/`）
-- **后端**：Spring Boot 3.5 + Spring AI（OpenAI 兼容协议）+ Spring Security + MyBatis-Plus + MySQL（`ai-spingboot/`）
-- **AI 模型**：默认 DeepSeek-V3（经硅基流动平台），兼容任何 OpenAI 协议接口
+| 模块 | 能力 |
+|---|---|
+| **AI 心理咨询**（用户端） | SSE 流式逐字回复、多会话管理、对话记忆、情绪花园展示、会话删除 |
+| **情绪日记**（用户端） | 1-10 情绪评分 + 8 种情绪卡片 + 睡眠/压力指标，同一用户同一天仅一条 |
+| **AI 情绪分析** | 日记提交后自动生成结构化分析：主要情绪 / 情绪评分 / 风险等级(0-3) / 关键词 / 专业建议 / 改善方案 |
+| **知识库** | 分类浏览、文章详情（阅读量统计）、标签；管理端 wangEditor 富文本编辑 + 封面上传 + 发布/下线 |
+| **数据看板**（管理端） | 统计卡（总用户/情绪日志/咨询会话/平均情绪）+ 情绪趋势、咨询活动、用户活跃度图表 |
+| **咨询记录 / 情绪日志**（管理端） | 分页检索、会话详情回看、AI 情绪分析查看、删除 |
+| **用户体系** | JWT 无状态认证，普通用户 / 管理员双角色，前端路由守卫 + 后端接口双重控制 |
 
-## 📸 页面截图
+## 🔐 安全设计
 
-### 用户端
-<div align="center">
-  <img src="docs/images/home.png" width="420" alt="首页"/>
-  <img src="docs/images/consultation.png" width="420" alt="AI心理咨询"/>
-  <img src="docs/images/emotion-diary.png" width="420" alt="情绪日记"/>
-  <img src="docs/images/knowledge.png" width="420" alt="知识库"/>
-  <img src="docs/images/article-detail.png" width="420" alt="文章详情"/>
-  <img src="docs/images/login.png" width="420" alt="登录"/>
-</div>
+- **认证**：无状态 JWT（HMAC256，24h 过期），BCrypt 密码哈希，token 失效自动清理并跳转登录
+- **角色隔离**：管理员接口服务端校验（非管理员拒绝），前端路由按角色分流
+- **密钥安全**：AI Key、数据库密码、JWT 密钥**全部环境变量注入**，仓库不含任何明文密钥
+- **上传安全**：封面图片扩展名白名单（jpg/jpeg/png/gif/webp），拒绝脚本等恶意文件
+- **XSS 防护**：文章详情 DOMPurify 消毒、Markdown 渲染链接协议白名单、用户消息 HTML 转义
 
-### 管理端
-<div align="center">
-  <img src="docs/images/admin-dashboard.png" width="420" alt="数据看板"/>
-  <img src="docs/images/admin-knowledge.png" width="420" alt="知识文章管理"/>
-  <img src="docs/images/admin-consultations.png" width="420" alt="咨询记录"/>
-  <img src="docs/images/admin-emotional.png" width="420" alt="情绪日志"/>
-</div>
+## 🚀 快速开始（Windows）
 
-## 🏷 标签 / 关键词
+### 1. 环境要求
 
-`心理健康` `mental-health` `AI心理咨询` `AI心理咨询助手` `DeepSeek` `AI对话` `聊天机器人` `chatbot` `SSE流式对话` `Spring Boot` `Spring AI` `Vue3` `Element Plus` `ECharts` `MyBatis-Plus` `JWT` `情绪日记` `情绪分析` `心理健康知识库` `数据可视化` `大学生心理` `全栈项目` `前后端分离`
+JDK 17+ · Maven 3.9+ · Node.js 20+ · MySQL 8
+
+### 2. 初始化数据库
+
+```bash
+mysql -u root -p < 资料/mental_health_assistant.sql
+```
+
+### 3. 配置环境变量（本机设置一次即可）
+
+| 环境变量 | 说明 | 示例 |
+|---|---|---|
+| `SILICONFLOW_API_KEY` | 硅基流动 API Key（siliconflow.cn 控制台申请） | `sk-xxxx` |
+| `AI_API_KEY` / `AI_BASE_URL` / `AI_MODEL` | 其他 OpenAI 兼容平台（如 DeepSeek 官方） | `sk-xxxx` / `https://api.deepseek.com` / `deepseek-chat` |
+| `MYSQL_PASSWORD` | 本机 MySQL 密码（默认 123456） | 你的密码 |
+| `JWT_SECRET` | JWT 签名密钥（生产环境务必覆盖默认值） | 随机字符串 |
+
+Windows 设置方法：`Win+R` → `sysdm.cpl` → 高级 → 环境变量；或管理员 CMD 执行 `setx 变量名 "值"`（设置后需重启后端进程）。
+
+### 4. 启动
+
+```bash
+# 后端（已内置打包好的前端页面，无需单独启动前端）
+cd ai-spingboot
+mvn -DskipTests clean package
+java -jar target/ai-spingboot-0.0.1-SNAPSHOT.jar
+# 浏览器访问 http://localhost:1235
+```
+
+也可直接双击 `启动后端.bat`；前端开发模式（改前端代码时）双击 `启动前端开发模式.bat`。
+
+**演示账号**（密码均为 `123456`）：`admin`（管理员）/ `test`、`ces`（普通用户）。
 
 ## 📁 目录结构
 
 ```
-├── ai-vue/            # 前端源码（Vue 3）
-├── ai-spingboot/      # 后端源码（Spring Boot，static/ 内为打包后的前端）
-├── 资料/              # 建库 SQL、技术文档
-├── 启动后端.bat        # Windows 一键启动脚本
-└── 启动前端开发模式.bat # Windows 前端开发模式脚本
+├── ai-vue/              # 前端源码（Vue 3 + Vite + Element Plus + ECharts + wangEditor）
+├── ai-spingboot/        # 后端源码（Spring Boot 3 + Spring AI + MyBatis-Plus + Security）
+│   └── src/main/resources/static/   # 打包后的前端页面（SPA 回退支持深层路由）
+├── 资料/                # 建库 SQL、前后端技术文档
+├── 启动后端.bat / 启动前端开发模式.bat
+└── 项目说明书.md         # 部署与运维说明（接口清单、修复记录、故障排查）
 ```
 
-## 🚀 快速开始（Windows）
-
-**环境要求**：JDK 17+、Maven、Node.js 20+、MySQL 8。
-
-1. **初始化数据库**：执行 `资料/mental_health_assistant.sql`（包含表结构与演示数据）。
-2. **配置环境变量**（本机只需设一次，见下表）。
-3. **启动后端**：双击 `启动后端.bat`（或 `cd ai-spingboot && mvn spring-boot:run`），访问 http://localhost:1235 —— 前端页面已打包进后端，无需单独启动前端。
-4. **前端开发模式**（改前端代码时）：先启动后端，再双击 `启动前端开发模式.bat`。
-
-**演示账号**（密码均为 `123456`）：`admin`（管理员）/ `test`、`ces`（普通用户）。
-
-## 🔑 密钥配置（API Key 等一律不入库）
-
-所有密钥通过**环境变量**配置，代码中只保留占位符，**不会因上传 GitHub 而泄露**：
-
-| 环境变量 | 说明 | 示例 |
-|---------|------|------|
-| `SILICONFLOW_API_KEY` | 硅基流动 API Key（https://siliconflow.cn 控制台申请） | `sk-xxxx` |
-| `AI_API_KEY` | 通用 AI Key（DeepSeek 官方等平台，优先级高于上面） | `sk-xxxx` |
-| `AI_BASE_URL` | AI 接口地址（默认硅基流动 `https://api.siliconflow.cn`） | `https://api.deepseek.com` |
-| `AI_MODEL` | 模型名（默认 `deepseek-ai/DeepSeek-V3`） | `deepseek-chat` |
-| `MYSQL_PASSWORD` | 本机 MySQL 密码（默认 123456，与本机不符时必须设置） | 你的密码 |
-| `JWT_SECRET` | JWT 签名密钥（生产环境请务必覆盖默认值） | 随机字符串 |
-
-> 例：硅基流动用户只需设置 `SILICONFLOW_API_KEY` 一个变量；DeepSeek 官方用户设置 `AI_API_KEY` + `AI_BASE_URL=https://api.deepseek.com` + `AI_MODEL=deepseek-chat`。
-> Windows 设置方法：`Win+R` → `sysdm.cpl` → 高级 → 环境变量；或管理员 CMD 执行 `setx 变量名 "值"`。设置后需重启后端进程。
-
-未配置 Key 时 AI 对话会返回友好提示，其余功能不受影响。
+开发文档见 `资料/前端技术文档.md`、`资料/后端技术文档.md`。
 
 ## 🐞 常见问题
 
-- **AI 提示"服务暂时不可用"**：检查 Key 是否正确、是否设置了环境变量后重启后端、账户是否有余额；后端控制台会打印真实错误原因。
-- **启动失败 Port 1235 in use**：任务管理器结束所有 `java.exe` 后再启动。
-- **上传的图片**：保存在 `ai-spingboot/uploads/`（已加入 .gitignore）。
+- **AI 提示"服务暂时不可用"**：检查 Key 是否正确、设置环境变量后是否重启了后端、账户是否有余额；后端控制台会打印真实错误原因。
+- **启动失败 "Port 1235 in use"**：任务管理器结束所有 `java.exe` 后重新启动。
+- **上传的图片**：保存在 `ai-spingboot/uploads/`（已加入 .gitignore，不入仓库）。
 
-## 📄 其他文档
+## 🏷 标签
 
-- 详细部署与运维说明见 `项目说明书.md`；
-- 开发参考见 `资料/前端技术文档.md`、`资料/后端技术文档.md`。
+`心理健康` `mental-health` `AI心理咨询` `DeepSeek` `chatbot` `SSE流式对话` `Spring Boot` `Spring AI` `Vue3` `Element Plus` `ECharts` `MyBatis-Plus` `JWT` `情绪日记` `情绪分析` `知识库` `数据可视化` `大学生心理` `全栈项目`
