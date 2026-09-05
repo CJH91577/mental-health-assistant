@@ -1,5 +1,7 @@
 # 心理健康助手（Mental Health Assistant）
 
+![Vue 3](https://img.shields.io/badge/Vue-3.5-42b883) ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-6db33f) ![DeepSeek](https://img.shields.io/badge/AI-DeepSeek--V3-4d6bfe) ![MySQL](https://img.shields.io/badge/MySQL-8.0-00758f) ![Element Plus](https://img.shields.io/badge/Element%20Plus-2.13-409eff)
+
 一个面向大学生群体的心理健康应用：**AI 心理咨询 + 情绪日记 + 心理健康知识库 + 数据看板**。
 
 ## ✨ 功能
@@ -17,6 +19,30 @@
 - **前端**：Vue 3 + Vite + Element Plus + Pinia + Vue Router + ECharts + wangEditor（`ai-vue/`）
 - **后端**：Spring Boot 3.5 + Spring AI（OpenAI 兼容协议）+ Spring Security + MyBatis-Plus + MySQL（`ai-spingboot/`）
 - **AI 模型**：默认 DeepSeek-V3（经硅基流动平台），兼容任何 OpenAI 协议接口
+
+## 📸 页面截图
+
+### 用户端
+<div align="center">
+  <img src="docs/images/home.png" width="420" alt="首页"/>
+  <img src="docs/images/consultation.png" width="420" alt="AI心理咨询"/>
+  <img src="docs/images/emotion-diary.png" width="420" alt="情绪日记"/>
+  <img src="docs/images/knowledge.png" width="420" alt="知识库"/>
+  <img src="docs/images/article-detail.png" width="420" alt="文章详情"/>
+  <img src="docs/images/login.png" width="420" alt="登录"/>
+</div>
+
+### 管理端
+<div align="center">
+  <img src="docs/images/admin-dashboard.png" width="420" alt="数据看板"/>
+  <img src="docs/images/admin-knowledge.png" width="420" alt="知识文章管理"/>
+  <img src="docs/images/admin-consultations.png" width="420" alt="咨询记录"/>
+  <img src="docs/images/admin-emotional.png" width="420" alt="情绪日志"/>
+</div>
+
+## 🏷 标签 / 关键词
+
+`心理健康` `mental-health` `AI心理咨询` `AI心理咨询助手` `DeepSeek` `AI对话` `聊天机器人` `chatbot` `SSE流式对话` `Spring Boot` `Spring AI` `Vue3` `Element Plus` `ECharts` `MyBatis-Plus` `JWT` `情绪日记` `情绪分析` `心理健康知识库` `数据可视化` `大学生心理` `全栈项目` `前后端分离`
 
 ## 📁 目录结构
 
@@ -66,4 +92,4 @@
 ## 📄 其他文档
 
 - 详细部署与运维说明见 `项目说明书.md`；
-- 开发参考见 `资料/宁渡课堂-前端技术文档.md`、`资料/宁渡课堂-后端技术文档.md`。
+- 开发参考见 `资料/前端技术文档.md`、`资料/后端技术文档.md`。
