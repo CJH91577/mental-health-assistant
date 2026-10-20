@@ -1,0 +1,39 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mha-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: mental_health_assistant
+      TZ: Asia/Shanghai
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mental_health_assistant.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+
+  app:
+    build: .
+    container_name: mha-app
+    restart: always
+    ports:
+      - "1235:1235"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mental_health_assistant?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      SILICONFLOW_API_KEY: ${SILICONFLOW_API_KEY}
+      TZ: Asia/Shanghai
+      # JDK HttpClient 空闲连接 60 秒即关闭，避免长时间空闲后复用被服务端重置的连接（AI 接口偶发 Connection reset 的根因）
+      JAVA_TOOL_OPTIONS: -Djdk.httpclient.keepalive.timeout=60 -Djdk.httpclient.keepalive.timeout.h2=60
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      - mysql
+
+volumes:
+  mysql-data:
+  uploads:

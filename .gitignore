@@ -12,3 +12,6 @@ ai-vue/node_modules/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# 部署密钥（含数据库密码/API Key，禁止提交）
+deploy/.env

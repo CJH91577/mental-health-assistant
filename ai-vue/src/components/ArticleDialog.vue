@@ -172,9 +172,16 @@ const beforeUpload = (file) => {
     return true
 }
 const businessId = ref(null)
+// 生成业务ID：HTTP 非安全上下文（如 http://IP 部署）没有 crypto.randomUUID，需降级
+const generateId = () => {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+        return window.crypto.randomUUID()
+    }
+    return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10)
+}
 const handleUploadRequest = async ({ file }) => {
     // UUID生成
-    businessId.value = crypto.randomUUID()
+    businessId.value = generateId()
     const fileRes = await uploadFile(file, {
         businessId: businessId.value
     })

@@ -98,16 +98,29 @@ public class PsychologicalSupportService {
             //用于存储AI完成的响应
             StringBuilder fullResponse = new StringBuilder();
 
-            // 使用chatClient发送消息到Open AI
-            chatClient.prompt(prompt)
-                    .user(userMessage)
-                    .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, conversationId))
-                    .stream()
-                    .content()
+            // 是否已经向前端输出过内容（连接被重置这类瞬时故障只在尚无输出时重试，避免内容重复）
+            java.util.concurrent.atomic.AtomicBoolean emitted = new java.util.concurrent.atomic.AtomicBoolean(false);
+
+            // 使用chatClient发送消息到Open AI。
+            // 注意：Spring AI 的流式 advisor 链只能执行一次，重试必须通过 Flux.defer 重新发起完整调用，
+            // 直接对同一个 Flux 重复订阅会报 "No StreamAdvisors available to execute"
+            reactor.core.publisher.Flux<String> chatFlux = reactor.core.publisher.Flux.defer(() ->
+                    chatClient.prompt(prompt)
+                            .user(userMessage)
+                            .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, conversationId))
+                            .stream()
+                            .content()
+            );
+
+            chatFlux
                     .doOnNext(Fragment -> {
+                        emitted.set(true);
                         fullResponse.append(Fragment);
                         sink.next(Fragment);
                     })
+                    // 服务器到 AI 接口的连接偶发被重置（Connection reset），自动重试一次
+                    .retryWhen(reactor.util.retry.Retry.max(1)
+                            .filter(error -> error instanceof org.springframework.web.reactive.function.client.WebClientRequestException && !emitted.get()))
                     .doOnComplete(() -> {
                         String completeRes = fullResponse.toString();
                         // 将AI返回的内容保存到数据库
